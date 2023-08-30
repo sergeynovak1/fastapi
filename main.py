@@ -1,7 +1,7 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body
+from fastapi import FastAPI, Path, Query, Body, Cookie
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -143,3 +143,8 @@ async def create_multiple_images(images: List[Image]):
 @app.post("/index-weights/")
 async def create_index_weights(weights: Dict[int, float]):
     return weights
+
+
+@app.get("/items1/")
+async def read_items1(ads_id: Optional[str] = Cookie(None)):
+    return {"ads_id": ads_id}
