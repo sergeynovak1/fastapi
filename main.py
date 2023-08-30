@@ -8,7 +8,7 @@ app = FastAPI()
 
 class Image(BaseModel):
     url: HttpUrl
-    name: str
+    name: str = Field(..., example="Foo")
 
 
 class Item(BaseModel):
@@ -20,6 +20,23 @@ class Item(BaseModel):
     tax: Optional[float] = None
     tags: Set[str] = set()
     images: Optional[List[Image]] = None
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "item1",
+                "description": "description1",
+                "price": 1,
+                "tax": 0,
+                "tags": ['tag1'],
+                "images": [
+                    {
+                        "url": "https://example1.com/",
+                        "name": "string"
+                    }
+                ]
+            }
+        }
 
 
 class User(BaseModel):
