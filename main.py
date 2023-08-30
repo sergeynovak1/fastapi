@@ -1,4 +1,4 @@
-from typing import Optional, List, Set
+from typing import Optional, List, Set, Dict
 from fastapi import FastAPI, Path, Query, Body
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
@@ -93,3 +93,13 @@ async def read_file(file_path: str):
 async def read_user_item(item_id: str, needy: str):
     item = {"item_id": item_id, "needy": needy}
     return item
+
+
+@app.post("/images/multiple/")
+async def create_multiple_images(images: List[Image]):
+    return images
+
+
+@app.post("/index-weights/")
+async def create_index_weights(weights: Dict[int, float]):
+    return weights
