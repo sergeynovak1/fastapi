@@ -1,7 +1,8 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File
+from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -155,8 +156,22 @@ async def read_items2(user_agent: Optional[str] = Header(None)):
     return {"User-Agent": user_agent}
 
 
-@app.post("/items/", response_model=Item, response_model_exclude_unset=True, response_model_exclude={"name"}, status_code=status.HTTP_201_CREATED)
+@app.post("/items/", response_model=Item, response_model_exclude_unset=True, response_model_exclude={"name"},
+          status_code=status.HTTP_201_CREATED, summary="Create an item",
+          # description="Create an item with all the information, name, description, price, tax and a set of unique tags",
+          tags=['create'],
+          response_description="The created item",
+          deprecated=True)
 async def create_item(item: Item):
+    """
+    Create an item with all the information:
+
+    - **name**: each item must have a name
+    - **description**: a long description
+    - **price**: required
+    - **tax**: if the item doesn't have tax, you can omit this
+    - **tags**: a set of unique tag strings for this item
+    """
     return item
 
 
@@ -173,3 +188,23 @@ async def create_file(file: bytes = File(...)):
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
     return {"filename": file.filename}
+
+
+class UnicornException(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+
+@app.exception_handler(UnicornException)
+async def unicorn_exception_handler(request: Request, exc: UnicornException):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Oops! {exc.name} did something. There goes a rainbow..."},
+    )
+
+
+@app.get("/unicorns/{name}")
+async def read_unicorn(name: str):
+    if name == "yolo":
+        raise UnicornException(name=name)
+    return {"unicorn_name": name}
