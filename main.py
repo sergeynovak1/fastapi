@@ -1,7 +1,7 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status
+from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -158,3 +158,8 @@ async def read_items2(user_agent: Optional[str] = Header(None)):
 @app.post("/items/", response_model=Item, response_model_exclude_unset=True, response_model_exclude={"name"}, status_code=status.HTTP_201_CREATED)
 async def create_item(item: Item):
     return item
+
+
+@app.post("/login/")
+async def login(username: str = Form(...), password: str = Form(...)):
+    return {"username": username}
