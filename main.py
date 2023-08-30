@@ -153,3 +153,8 @@ async def read_items1(ads_id: Optional[str] = Cookie(None)):
 @app.get("/items2/")
 async def read_items2(user_agent: Optional[str] = Header(None)):
     return {"User-Agent": user_agent}
+
+
+@app.post("/items/", response_model=Item, response_model_exclude_unset=True, response_model_exclude={"name"})
+async def create_item(item: Item):
+    return item
