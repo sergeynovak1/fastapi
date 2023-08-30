@@ -1,7 +1,7 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form
+from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -163,3 +163,13 @@ async def create_item(item: Item):
 @app.post("/login/")
 async def login(username: str = Form(...), password: str = Form(...)):
     return {"username": username}
+
+
+@app.post("/files/")
+async def create_file(file: bytes = File(...)):
+    return {"file_size": len(file)}
+
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    return {"filename": file.filename}
