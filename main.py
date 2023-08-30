@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel
 from enum import Enum
 
@@ -8,8 +8,9 @@ app = FastAPI()
 
 class Item(BaseModel):
     name: str
+    description: Optional[str] = None
     price: float
-    is_offer: Optional[bool] = None
+    tax: Optional[float] = None
 
 
 class ModelName(str, Enum):
@@ -24,8 +25,22 @@ async def read_root():
 
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+async def read_item(
+        item_id: int = Path(..., title="The ID of the item to get"),
+        q: Optional[str] = Query(None, alias="item-query"),
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
+
+
+@app.get("/items/")
+async def read_items(q: Optional[str] = Query(None, alias="item-query")):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 
 @app.put("/items/{item_id}")
