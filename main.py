@@ -1,7 +1,7 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body, Cookie
+from fastapi import FastAPI, Path, Query, Body, Cookie, Header
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -148,3 +148,8 @@ async def create_index_weights(weights: Dict[int, float]):
 @app.get("/items1/")
 async def read_items1(ads_id: Optional[str] = Cookie(None)):
     return {"ads_id": ads_id}
+
+
+@app.get("/items2/")
+async def read_items2(user_agent: Optional[str] = Header(None)):
+    return {"User-Agent": user_agent}
