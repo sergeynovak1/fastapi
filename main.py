@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 from uuid import UUID
 from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -208,3 +209,34 @@ async def read_unicorn(name: str):
     if name == "yolo":
         raise UnicornException(name=name)
     return {"unicorn_name": name}
+
+items = {
+    "foo": {"name": "Foo", "price": 50.2},
+    "bar": {"name": "Bar", "description": "The bartenders", "price": 62, "tax": 20.2},
+    "baz": {"name": "Baz", "description": None, "price": 50.2, "tax": 10.5, "tags": []},
+}
+
+
+class Item2(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    tax: float = 10.5
+    tags: List[str] = []
+
+
+@app.put("/items2/{item_id}", response_model=Item2)
+async def update_item(item_id: str, item: Item2):
+    update_item_encoded = jsonable_encoder(item)
+    items[item_id] = update_item_encoded
+    return update_item_encoded
+
+
+@app.patch("/items2/{item_id}")
+async def update_item(item_id: str, item: Item2):
+    stored_item_data = items[item_id]
+    stored_item_model = Item2(**stored_item_data)
+    update_data = item.dict(exclude_unset=True)
+    updated_item = stored_item_model.copy(update=update_data)
+    items[item_id] = jsonable_encoder(updated_item)
+    return jsonable_encoder(updated_item)
