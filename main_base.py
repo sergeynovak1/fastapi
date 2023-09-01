@@ -148,7 +148,14 @@ async def create_index_weights(weights: Dict[int, float]):
     return weights
 
 
-@app.get("/items1/")
+responses = {
+    404: {"description": "Item not found"},
+    302: {"description": "The item was moved"},
+    403: {"description": "Not enough privileges"},
+}
+
+
+@app.get("/items11/", responses={**responses, 200: {"content": {"image/png": {}}}})
 async def read_items1(ads_id: Optional[str] = Cookie(None)):
     return {"ads_id": ads_id}
 
