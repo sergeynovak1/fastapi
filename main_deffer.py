@@ -1,4 +1,6 @@
-from fastapi import BackgroundTasks, FastAPI
+from typing import Optional
+
+from fastapi import BackgroundTasks, FastAPI, Depends
 
 app = FastAPI()
 
@@ -13,3 +15,22 @@ def write_notification(email: str, message=""):
 async def send_notification(email: str, background_tasks: BackgroundTasks):
     background_tasks.add_task(write_notification, email, message="some notification")
     return {"message": "Notification sent in the background"}
+
+
+def write_log(message: str):
+    with open("log.txt", mode="a") as log:
+        log.write(message)
+
+
+def get_query(background_tasks: BackgroundTasks, q: Optional[str] = None):
+    if q:
+        message = f"found query: {q}\n"
+        background_tasks.add_task(write_log, message)
+    return q
+
+
+@app.post("/send-notification2/{email}")
+async def send_notification(email: str, background_tasks: BackgroundTasks, q: str = Depends(get_query)):
+    message = f"message to {email}\n"
+    background_tasks.add_task(write_log, message)
+    return {"message": f"Message {q} sent"}
