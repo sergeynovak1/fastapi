@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request, Depends, Response
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import ORJSONResponse, HTMLResponse
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -289,3 +289,18 @@ def get_legacy_data():
 @app.get("/items5/", response_class=ORJSONResponse)
 async def read_items():
     return [{"item_id": "Foo"}]
+
+
+@app.get("/items6/")
+async def read_items():
+    html_content = """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1>Look ma! HTML!</h1>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content, status_code=200)
