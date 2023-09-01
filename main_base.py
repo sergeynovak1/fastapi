@@ -1,7 +1,7 @@
 from typing import Optional, List, Set, Dict
 from datetime import datetime, time, timedelta
 from uuid import UUID
-from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request, Depends
+from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request, Depends, Response
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, HttpUrl
@@ -268,3 +268,18 @@ async def read_items(commons: CommonQueryParams = Depends(CommonQueryParams)):
         items = fake_items_db[commons.skip : commons.skip + commons.limit]
         response.update({"items": items})
     return response
+
+
+@app.get("/legacy/")
+def get_legacy_data():
+    data = """<?xml version="1.0"?>
+    <shampoo>
+    <Header>
+    Apply shampoo here.
+    </Header>
+    <Body>
+    You'll have to use soap here.
+    </Body>
+    </shampoo>
+    """
+    return Response(content=data, media_type="application/xml")
