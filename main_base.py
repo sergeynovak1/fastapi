@@ -291,7 +291,7 @@ async def read_items():
     return [{"item_id": "Foo"}]
 
 
-@app.get("/items6/")
+@app.get("/items6/", response_class=HTMLResponse)
 async def read_items():
     html_content = """
     <html>
