@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import FastAPI, Path, Query, Body, Cookie, Header, status, Form, UploadFile, File, Request, Depends, Response
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import ORJSONResponse, HTMLResponse
+from fastapi.responses import ORJSONResponse, HTMLResponse, PlainTextResponse, RedirectResponse
 from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
 
@@ -55,9 +55,9 @@ class ModelName(str, Enum):
     lenet = "lenet"
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+@app.get("/", response_class=PlainTextResponse)
+async def main():
+    return "Hello World"
 
 
 @app.get("/items/{item_id}")
@@ -304,3 +304,8 @@ async def read_items():
     </html>
     """
     return HTMLResponse(content=html_content, status_code=200)
+
+
+@app.get("/typer")
+async def read_typer():
+    return RedirectResponse("https://typer.tiangolo.com")
