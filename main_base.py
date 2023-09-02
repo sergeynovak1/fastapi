@@ -330,3 +330,16 @@ def create_cookie():
     response = JSONResponse(content=content)
     response.set_cookie(key="fakesession", value="fake-cookie-session-value")
     return response
+
+
+@app.get("/headers-and-object/")
+def get_headers(response: Response):
+    response.headers["X-Cat-Dog"] = "alone in the world"
+    return {"message": "Hello World"}
+
+
+@app.get("/headers/")
+def get_headers():
+    content = {"message": "Hello World"}
+    headers = {"X-Cat-Dog": "alone in the world", "Content-Language": "en-US"}
+    return JSONResponse(content=content, headers=headers)
