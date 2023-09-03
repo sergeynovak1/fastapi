@@ -354,3 +354,21 @@ def get_or_create_task(task_id: str, response: Response):
         tasks[task_id] = "This didn't exist before"
         response.status_code = status.HTTP_201_CREATED
     return tasks[task_id]
+
+
+class FixedContentQueryChecker:
+    def __init__(self, fixed_content: str):
+        self.fixed_content = fixed_content
+
+    def __call__(self, q: str = ""):
+        if q:
+            return self.fixed_content in q
+        return False
+
+
+checker = FixedContentQueryChecker("bar")
+
+
+@app.get("/query-checker/")
+async def read_query_check(fixed_content_included: bool = Depends(checker)):
+    return {"fixed_content_in_query": fixed_content_included}
