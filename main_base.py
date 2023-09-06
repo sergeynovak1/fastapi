@@ -372,3 +372,15 @@ checker = FixedContentQueryChecker("bar")
 @app.get("/query-checker/")
 async def read_query_check(fixed_content_included: bool = Depends(checker)):
     return {"fixed_content_in_query": fixed_content_included}
+
+
+@app.on_event("startup")
+async def startup_event():
+    with open("log.txt", mode="a") as log:
+        log.write("Application startup")
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    with open("log.txt", mode="a") as log:
+        log.write("Application shutdown")
